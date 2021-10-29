@@ -244,6 +244,7 @@ class List{
             this.#startValue = array;
             this.#array = array;
         }
+
         
     }
 
@@ -251,6 +252,9 @@ class List{
         return this.#array;
     }
 
+    length(){
+        return this.#array.length;
+    }
     forEach(func){
         for (let i in this.array()){
             func(this.array()[parseInt(i)])
@@ -271,18 +275,40 @@ class List{
         this.#array = result.#array;
     }
 
+    toString(){
+        var result = "";
+        for (let i of this.#array){
+            result += i;
+        }
+        return result;
+    }
+
+
     clear(){
         this.#array = [];
     }
 
-    sort(){
+    originalSort(){
         this.#array.sort();
-        return this.#array
     }
-    
+
+    sort(){
+        var x;
+        var result = new List(this.#array);
+        for (let i = result.array().length - 1; i > 0; i--){
+            for (let j = 0; j < i; j++){
+                if (result.array()[j] > result.array()[j+1]){
+                    x = result.array()[j];
+                    result.change(j, result.array()[j+1]);
+                    result.change(j+1, x);
+                }
+            }
+        }
+        this.#array = result.#array
+    }
+
     append(obj){
         this.#array.push(obj);
-
 
     }
 
@@ -326,7 +352,7 @@ class List{
                 result.append(this.#array[i]);
             }
         }
-        return result.array()
+        return result.array();
     }
     
     // 这个函数好像没什么卵用~
@@ -350,10 +376,62 @@ class List{
         }
         return result;
     }
+
+    getValueByString(string){
+        var result = new List([]);
+        for (let i of string){
+            result.append(i);
+        }
+        return result;
+    }
 }
 
+// class Integer{
 
+//     getNumberByChar(target_char){
+//         var value = new Map([['1', 1], ['2', 2], ['3', 3], ['4', 4],
+//                             ['5', 5], ['6', 6], ['7', 7], ['8', 8],
+//                             ['9', 9], ['0', 0]]);
+//         for (let i of value){
+//             if (i[0] === target_char){
+//                 return value.get(i[0]);
+//             }
+//         }
+//         throw new Error("InputNotIsNumber...")
+//     }
+
+//     int(number_text){
+//         var numbers = new List().getValueByString(number_text);
+//         numbers.reversed();
+//         var results = new List();
+//         for (let i in numbers){
+//             i = parseInt(i)就离谱呀，我写这个函数就是为了实现这个功能,又绕回来了，我忘了js类型转换的函数名，准备自己写一个，写到这想起来了...
+//         }
+//     }
+// }
+
+class MyMath{
+    random(start, stop){
+        if (start > stop){
+            throw new Error("\"start\" should be smaller than \"stop\"")
+        }
+        var root = Math.random();
+        root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
+        var num_length = String(stop).length;
+        root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
+        root = parseInt(root);
+        while (root < start | root > stop){
+            root = Math.random();
+            root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
+            num_length = String(stop).length;
+            root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
+            root = parseInt(root);
+        }
+        return root;
+    }
+}
 module.exports = {
     MyTools,
-    List
+    List,
+    MyMath,
 }
