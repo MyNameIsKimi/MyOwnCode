@@ -1,0 +1,2 @@
+#2021-10-29
+JavaScript: 更新了基于自带Math.random()函数的random函数，位于新类MyMath中。使用时传入两个参数(start, stop)表示范围[start, stop]。
