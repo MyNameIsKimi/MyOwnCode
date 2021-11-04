@@ -411,23 +411,135 @@ class List{
 // }
 
 class MyMath{
-    random(start, stop){
-        if (start > stop){
-            throw new Error("\"start\" should be smaller than \"stop\"")
+
+    bigger(x, y){
+        if (x === y){
+            return true;
         }
+        x > y ? x : y;
+    }
+    radianToAngle(rad){
+        return rad * 57.29577951308232;
+    }
+
+    angleToRadian(angle, pi){
+        if (pi === undefined){
+            pi = 3.14;
+        }
+        return angle * pi / 180;
+    }
+
+    opposite(num){
+        return num - 2 * num;
+    }
+
+    equalsEndEdge(angle){
+        if (angle >= 360){
+            return angle % 360;
+        }else if (angle < 360){
+            return angle - 720;
+        }
+        
+    }
+
+    random(min, max){
+        if (min > max){
+            throw new Error("\"min\" should be smaller than \"max\"");
+        }
+        if (min >= 0 && max >= 0){
+            return this.randPositiveInteger(min, max);
+        }
+        var exchange;
+        var result;
+        if (min <= 0 && max <= 0){
+            min = new MyMath().opposite(min);
+            max = new MyMath().opposite(max);
+            
+            if (min > max){
+                exchange = min;
+                min = max;
+                max = exchange;
+            }
+            result = new MyMath().randPositiveInteger(min, max);
+
+            return new MyMath().opposite(result);
+
+        }else if (min <= 0 && max >= 0){
+            var min_random;
+            var max_random;
+
+
+            min = Math.abs(min);
+            max = Math.abs(max);
+            min_random = new MyMath().randPositiveInteger(0, min);
+            max_random = new MyMath().randPositiveInteger(0, max);
+            if (min_random > max_random){
+                result = new MyMath().randPositiveInteger(0, min);
+            }else if (min_random < max_random){
+                result = new MyMath().randPositiveInteger(0, max);
+            }else{
+                result = new MyMath().randPositiveInteger(0, max);
+            }
+            if (new MyMath().randPositiveInteger(0, 1) === 1){
+                result = new MyMath().opposite(result);
+            }
+            
+
+        }
+        while (result > max){
+            result--;
+        }
+        return result
+    }
+
+
+
+    // 随机正整数，参数不能包含负数
+    randPositiveInteger(min, max){
+        if (min > max){
+            throw new Error("\"min\" should be smaller than \"max\"");
+        }else if (min < 0 | max < 0){
+            throw new Error("range cannot be less than \"zero\"");
+        }
+
         var root = Math.random();
         root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
-        var num_length = String(stop).length;
+        var num_length = String(max).length;
         root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
         root = parseInt(root);
-        while (root < start | root > stop){
+
+        while (root < min | root > max){
             root = Math.random();
             root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
-            num_length = String(stop).length;
+            num_length = String(max).length;
             root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
             root = parseInt(root);
+
         }
         return root;
+    }
+    // 随机正浮点数，因为基于random函数，故参数同样不能包含负数
+    randPositiveFloat(min, max, float_length){
+
+        if (min > max){
+            throw new Error("\"min\" should be smaller than \"max\"");
+        }else if (min < 0 | max < 0){
+            throw new Error("range cannot be less than \"zero\"");
+        }
+
+        if (float_length === undefined){
+            float_length = 1;
+        }
+        var forward_int = String(this.randPositiveInteger(min, max - 1));
+        var float = "";
+        for (let i = 0; i < float_length; i++){
+            float += String(this.randPositiveInteger(1, 9));
+        }
+        var result = forward_int + '.' + float;
+        result = parseFloat(result);
+        return result;
+
+
     }
 }
 module.exports = {
