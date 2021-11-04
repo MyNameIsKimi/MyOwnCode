@@ -1,2 +1,6 @@
 #2021-10-29
-JavaScript: 更新了基于自带Math.random()函数的random函数，位于新类MyMath中。使用时传入两个参数(start, stop)表示范围[start, stop]。
+JavaScript: 更新了基于自带Math().random()函数的random函数，位于新类MyMath中。使用时传入两个参数(start, stop)表示范围[start, stop]。
+
+#2021-11-04
+JavaScript: 基于以前的MyMath().random()函数，改进之前的不足，支持生成范围内的随机负数，并将原MyMath().random()函数更名为randPositiveInteger()，将功能单独分出来，若只生成正整数，\
+建议直接使用MyMath().randPositiveInteger()函数，能略微节省时间提高性能。
