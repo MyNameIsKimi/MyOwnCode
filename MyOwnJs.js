@@ -1,6 +1,6 @@
 class MyTools{
 
-    max(array){
+    static max(array){
         var result = array[0];
         for (let i of array){
             if (i > result){
@@ -9,7 +9,7 @@ class MyTools{
         }
         return result;
     }
-    min(array){
+    static min(array){
         var result = array[0];
         for (let i of array){
             if (i < result){
@@ -19,7 +19,7 @@ class MyTools{
         return result;
     }
 
-    sort(arr){
+    static sort(arr){
         var x;
         var result = new List(arr);
         for (let i = result.array().length - 1; i > 0; i--){
@@ -35,7 +35,7 @@ class MyTools{
         
     }
     
-    arrayToString(array){
+    static arrayToString(array){
         var result = "";
         for (let i of array){
 
@@ -43,13 +43,13 @@ class MyTools{
         }
         return result;
     }
-    getBig(x, y){
+    static getBig(x, y){
         if (typeof(x) != "number" | typeof(y) != "number"){
             throw new Error("Need to int...");
         }
         return x > y ? x: y;
     }
-    floatOperation(operations){
+    static floatOperation(operations){
         var x, y, result, ope;
         var counter = 1;
         if (this.contains(operations, '+')){
@@ -98,7 +98,7 @@ class MyTools{
     }
 
 
-    floatAdd(x, y){
+    static floatAdd(x, y){
         var result = NaN;
         var x_float = 0;
         var y_float = 0;
@@ -142,14 +142,15 @@ class MyTools{
     }
 
 
-    isTheArray(obj){
+    static isTheArray(obj){
         var result = false;
         if (obj.__proto__ === Array.prototype){
             result = true;
         }
         return result;
     }
-    TypeEquals(x, y){
+
+    static typeEquals(x, y){
         var result = false;
         if (x.__proto__ === y.__proto__){
             result = true;
@@ -157,7 +158,7 @@ class MyTools{
         return result;
     }
 
-    equals(x, y){
+    static equals(x, y){
         var result = false;
         if (typeof(x) === "object"| typeof(y) === "object"){
             throw new Error("TypeError: Object type cannot be 'object'");
@@ -176,7 +177,7 @@ class MyTools{
         return result;
     }
 
-    contains(text, target){
+    static contains(text, target){
         var result = false;
         if (text.indexOf(target) != -1){
             result = true;
@@ -184,20 +185,20 @@ class MyTools{
         return result;
     }
 
-    eachPrint(array){
+    static eachPrint(array){
         for (let i = 0; i < array.length; i++){
             this.print(array[i]);
         }
     }
 
-    print(...objs){
+    static print(...objs){
         for (let i of objs){
             console.log(i);
             
         }
     }
     
-    addZero(text,num){
+    static addZero(text,num){
         var zeroLength = num - String(text).length;
         var result = "";
         for (let i = 0; i < zeroLength; i++){
@@ -207,7 +208,7 @@ class MyTools{
         return result;
     }
 
-    stringToList(str){
+    static stringToList(str){
         var result = new List([]);
         for (let i of str){
             result.append(i);
@@ -215,7 +216,7 @@ class MyTools{
         return result;
     }
     
-    range(start, stop){
+    static range(start, stop){
         var array = [];
         var s = start;
         while (s < stop){
@@ -365,8 +366,9 @@ class List{
     // }
 
     containsElenmentCount(elenment){
+        // 返回元素中第一个与传入参数相等的元素的下标
         var result = false;
-        if (new MyTools().contains(this.#array, elenment)){
+        if (MyTools.contains(this.#array, elenment)){
             result = 0;
             for (let i of this.array()){
                 if (i === elenment){
@@ -412,28 +414,28 @@ class List{
 
 class MyMath{
 
-    bigger(x, y){
+    static bigger(x, y){
         if (x === y){
             return true;
         }
         x > y ? x : y;
     }
-    radianToAngle(rad){
+    static radianToAngle(rad){
         return rad * 57.29577951308232;
     }
 
-    angleToRadian(angle, pi){
+    static angleToRadian(angle, pi){
         if (pi === undefined){
             pi = 3.14;
         }
         return angle * pi / 180;
     }
 
-    opposite(num){
+    static opposite(num){
         return num - 2 * num;
     }
 
-    equalsEndEdge(angle){
+    static equalsEndEdge(angle){
         if (angle >= 360){
             return angle % 360;
         }else if (angle < 360){
@@ -442,7 +444,7 @@ class MyMath{
         
     }
 
-    random(min, max){
+    static random(min, max){
         if (min > max){
             throw new Error("\"min\" should be smaller than \"max\"");
         }
@@ -495,7 +497,7 @@ class MyMath{
 
 
     // 随机正整数，参数不能包含负数
-    randPositiveInteger(min, max){
+    static randPositiveInteger(min, max){
         if (min > max){
             throw new Error("\"min\" should be smaller than \"max\"");
         }else if (min < 0 | max < 0){
@@ -519,7 +521,7 @@ class MyMath{
         return root;
     }
     // 随机正浮点数，因为基于random函数，故参数同样不能包含负数
-    randPositiveFloat(min, max, float_length){
+    static randPositiveFloat(min, max, float_length){
 
         if (min > max){
             throw new Error("\"min\" should be smaller than \"max\"");
@@ -542,8 +544,10 @@ class MyMath{
 
     }
 }
-module.exports = {
-    MyTools,
-    List,
-    MyMath,
-}
+// module.exports = {
+//     MyTools,
+//     List,
+//     MyMath,
+// }
+
+export {MyTools, MyMath, List};
