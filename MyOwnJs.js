@@ -1,22 +1,22 @@
 class MyTools{
 
-    static max(array){
-        var result = array[0];
-        for (let i of array){
-            if (i > result){
-                result = i;
-            }
+    static mapLength(map){
+        var len = 0;
+        for (let i of map){
+            len++;
         }
-        return result;
+        return len
     }
-    static min(array){
-        var result = array[0];
-        for (let i of array){
-            if (i < result){
-                result = i;
-            }
+
+    static ord(character){
+        if (character.length === 1 && character.__proto__ === String.prototype){
+            return character.charCodeAt()
         }
-        return result;
+        throw new Error("\"character\" must be A character")
+    }
+
+    static chr(charCode){
+        return String.fromCharCode(charCode)
     }
 
     static sort(arr){
@@ -26,125 +26,76 @@ class MyTools{
             for (let j = 0; j < i; j++){
                 if (result.array()[j] > result.array()[j+1]){
                     x = result.array()[j];
-                    result.change(j, result.array()[j+1]);
-                    result.change(j+1, x);
+                    result.set(j, result.array()[j+1]);
+                    result.set(j+1, x);
                 }
             }
         }
         return result.array();
         
     }
-    
-    static arrayToString(array){
-        var result = "";
-        for (let i of array){
 
-            result += i;
+    static isIterable(obj){
+        var result = true
+        try{
+            for (let i of obj){
+                break
+            }
+        }catch(TypeError){
+            result = false
         }
-        return result;
+        return result
     }
+
+
     static getBig(x, y){
         if (typeof(x) != "number" | typeof(y) != "number"){
             throw new Error("Need to int...");
         }
         return x > y ? x: y;
     }
-    static floatOperation(operations){
-        var x, y, result, ope;
-        var counter = 1;
-        if (this.contains(operations, '+')){
-            x = operations.split('+')[0];
-            y = operations.split('+')[1];
-            ope = '+';
-        }else if (this.contains(operations, '-')){
-            x = operations.split('-')[0];
-            y = operations.split('-')[1];
-            ope = '-';
-        }else if (this.contains(operations, '*')){
-            x = operations.split('*')[0];
-            y = operations.split('*')[1];
-            ope = '*';
-        }
-        x = parseFloat(x);
-        y = parseFloat(y);
-        switch (ope){
-            case '+':
-                result = this.floatAdd(x, y);
-                break;
-            case '-':
-                if (x > y){
-                    while (this.contains(String(y), '.')){
-                        y *= 10;
-                        counter *= 10;
-                    }
-                }
-                x *= counter;
-                result = (x - y) / counter;
-                break;
-            case '*':
-                while (this.contains(String(x), '.') | this.contains(String(y), '.')){
-                    if (this.contains(String(x), '.')){
-                        x *= 10;
-                        counter *= 10;
-                    }else{
-                        y *= 10;
-                        counter *= 10;
-                    }
-                }
-                result = x * y / counter;
-
-        }
-        return result;
-    }
 
 
     static floatAdd(x, y){
-        var result = NaN;
-        var x_float = 0;
-        var y_float = 0;
-        for (let i = 0; i < String(x).length; i++){
-            if (String(x)[i] === '.'){
-                x_float += i+1;
-            }
+        let x1 = x;
+        let y1 = y;
+        let x_multiple = 1;
+        let y_multiple = 1;
+        while (new List(String(x)).contains('.')){
+            x *= 10;
+            x_multiple *= 10;
         }
-        for (let i = 0; i < String(y).length; i++){
-            if (String(y)[i] === '.'){
-                y_float += i+1;
-            }
+        while (new List(String(y)).contains('.')){
+            y *= 10;
+            y_multiple *= 10;
         }
-        var x_float_length = String(x).length - x_float;
-        var y_float_length = String(y).length - y_float;
-        var effective = this.getBig(x_float_length, y_float_length);
-        var add = x + y;
-        add = String(add);
-        var f = "";
-        var yes = false;
-        for (let i of add){
-            if (i === '.'){
-                yes = true;
-                continue;
-            }else if (yes === true){
-                f += i;
-            }
+        x = x1;
+        y = y1;
+        x *= x_multiple > y_multiple? x_multiple: y_multiple;
+        y *= x_multiple > y_multiple? x_multiple: y_multiple;
+        // return [x_multiple, y_multiple]
+    
+        let result = x + y;
+        let zero_count = new List(String(x_multiple > y_multiple? x_multiple: y_multiple)).elenmentCount().get("[0]")
+        if (String(result).length <= zero_count){
+            result = MyTools.addZero(String(result), zero_count + 1)
         }
-        var float_content = this.stringToList(f).slice(0, effective);
-        // console.log(float_content.array());
-        float_content = this.arrayToString(float_content);
-        var num_content = "";
-        for (let i of add){
-            if (i === '.'){
-                break;
-            }
-            num_content += i;
+        result = String(result)
+        let temp = new List(result)
+        temp.reversed()
+        temp.afterInsert(zero_count - 1, '.')
+        temp.reversed()
+        result = ""
+        for (let i of temp.array()){
+            result += i
         }
-        result = num_content + '.' + float_content;
-        return parseFloat(result);
+        return parseFloat(result)
     }
 
 
     static isTheArray(obj){
         var result = false;
-        if (obj.__proto__ === Array.prototype){
+        if (obj.__proto__ === new Array().__proto__){
             result = true;
         }
         return result;
@@ -153,33 +104,6 @@ class MyTools{
     static typeEquals(x, y){
         var result = false;
         if (x.__proto__ === y.__proto__){
-            result = true;
-        }
-        return result;
-    }
-
-    static equals(x, y){
-        var result = false;
-        if (typeof(x) === "object"| typeof(y) === "object"){
-            throw new Error("TypeError: Object type cannot be 'object'");
-        }
-        // else if (typeof(x) === "number" && typeof(y) === "number"){
-        //     if (x - y < 1e8 | y - x < 1e8){
-        //         result = true;
-        //     }
-        // }
-        else if (typeof(x) != typeof(y)){
-            return result;
-        }
-        else if (x === y){
-            result = true
-        }
-        return result;
-    }
-
-    static contains(text, target){
-        var result = false;
-        if (text.indexOf(target) != -1){
             result = true;
         }
         return result;
@@ -217,6 +141,10 @@ class MyTools{
     }
     
     static range(start, stop){
+        if (stop === undefined){
+            stop = start
+            start = 0
+        }
         var array = [];
         var s = start;
         while (s < stop){
@@ -232,21 +160,39 @@ class MyTools{
 
 class List{
     #array
-    #startValue
-    constructor(array){
+    constructor(iterable){
         if (arguments.length == 0){
-            this.#startValue = new Array();
             this.#array = new Array();
+        // 判断对象是否可迭代(其实不是很严谨这样判断，可以尝试用for来判断)
+        }else if (typeof(iterable[Symbol.iterator]) === "function"){
+            this.#array = new Array();
+            for (let i of iterable){
+                this.push(i)
+            }
         }
-        else if (array.__proto__ != Array.prototype){
-            var type = String(typeof(array));
-            throw new Error(`TypeError: need to get an \"Array\", but get an \"${type}\"`)
+        else if (iterable.__proto__ != new Array().__proto__){
+            // var type = String(typeof(array));
+            // throw new Error(`TypeError: need to get an \"Array\", but get an \"${type}\"`)
+            this.#array = [iterable]
         }else{
-            this.#startValue = array;
-            this.#array = array;
+            this.#array = iterable;
         }
 
         
+    }
+
+    indexOf(ele){
+        var result = 0
+        for (let i in this.#array){
+            if (Array.isArray(ele) && Array.isArray(this.#array[parseInt(i)])){
+                if (new List(ele).absEquals(new List(this.#array[parseInt(i)]))){
+                    return parseInt(i)
+                }
+            }else if (this.#array[parseInt(i)] === ele){
+                return parseInt(i)
+            }
+        }
+        return false
     }
 
     array(){
@@ -254,16 +200,674 @@ class List{
     }
 
     length(){
+
         return this.#array.length;
     }
+
     forEach(func){
-        for (let i in this.array()){
-            func(this.array()[parseInt(i)])
+        for (let i of this.array()){
+            func(i)
         }
     }
 
-    reset(){
-        this.#array = this.#startValue;
+    absEquals(listB){
+        if (listB.__proto__ != this.__proto__){
+            throw new Error("The types of \"listB\" must be \"List\"")
+        }
+
+        var result = true
+        var x = this.flat(true)
+        var y = listB.flat(true)
+
+        if (x.length != y.length){
+            return false
+        }
+        for (let i in x){
+            if (x[parseInt(i)] != y[parseInt(i)]){
+                return false
+            }
+        }
+        return true
+    }
+
+    equals(listB){
+        if (listB.__proto__ != this.__proto__){
+            throw new Error("The types of \"listB\" must be \"List\"")
+        }
+        var result = true
+        var ele_count_this = this.elenmentCount()
+        var ele_count_listB = listB.elenmentCount()
+        for (let i of new List(ele_count_this.keys()).array()){
+            if (ele_count_this.get(i) != ele_count_listB.get(i)){
+                result = false
+                break
+            }
+        }
+        return result
+
+    }
+
+    // 将列表转换为一维列表, 如果"change"为true, 将改变原列表, "returns"为true, 将返回转换后的列表
+    flat(returns, change){
+        if (returns === undefined){
+            returns = false
+        }
+        if (change === undefined){
+            change = false
+        }
+        var result = new List()
+        for (let i of this.#array){
+            if (Array.isArray(i)){
+                result.append('Array:')
+                result.join(new List(new List(i).flat(true)))
+                result.append(":Array")
+                continue
+            }
+            result.append(i)
+        }
+
+        if (change === true){
+            this.#array = result.array()
+        }
+
+        if (returns === true){
+            return result.array()
+        }
+    }
+
+    // outString(){
+    //     var result = ""
+    //     result += "{"
+    //     for (let i in this.#array){
+    //         if (parseInt(i) === this.#array.length - 1){
+    //             result += this.#array[parseInt(i)]
+    //             continue
+    //         }
+    //         result += this.#array[parseInt(i)]
+    //         result += ", "
+    //     }
+    //     result += "}"
+    //     return result
+
+    // }
+
+    showItems(){
+        var isFlat = true
+        var result = ""
+        for (let i of this.#array){
+            if (Array.isArray(i)){
+                isFlat = false
+                break
+            }
+        }
+
+        if (isFlat){
+            result += "["
+            for (let i = 0; i < this.#array.length; i++){
+                if (i === this.#array.length - 1){
+                    if (this.#array[i].__proto__ === String.prototype){
+                        result += "\"" + this.#array[i] + "\""
+                        continue
+                    }else if (this.#array[i].__proto__ === Map.prototype){
+                        let index = 0
+                        result += "Map("
+                        for (let j of this.#array[i]){
+                            if (index === MyTools.mapLength(this.#array[i]) - 1){
+                                let key = j[0]
+                                let value = j[1]
+                                let keyType = typeof key
+                                let valueType = typeof value
+                                if (key.__proto__ === Array.prototype){
+                                    key = new List(key).showItems()
+                                }else if (key.__proto__ === String.prototype){
+                                    key = "\"" + key + "\""
+                                }else if (key.__proto__ === Map.prototype){
+                                    keyType = "Map"
+                                }else if (key.__proto__ === Array.prototype){
+                                    keyType = "Array"
+                                }
+    
+                                if (value.__proto__ === Array.prototype){
+                                    value = new List(value).showItems()
+                                }else if (value.__proto__ === String.prototype){
+                                    value = "\"" + value + "\""
+                                }else if (value.__proto__ === Map.prototype){
+                                    valueType = "Map"
+                                }else if (key.__proto__ === Array.prototype){
+                                    valueType = "Array"
+                                }
+
+                                switch (keyType){
+                                    case "string":
+                                        keyType = "str"
+                                        break
+                                    case "number":
+                                        keyType = "num"
+                                        break
+                                    case "boolean":
+                                        keyType = "bool"
+                                        break
+                                    case "Array":
+                                        keyType = "arr"
+                                        break
+                                }
+                                switch (valueType){
+                                    case "string":
+                                        valueType = "str"
+                                        break
+                                    case "number":
+                                        valueType = "num"
+                                        break
+                                    case "boolean":
+                                        valueType = "bool"
+                                        break
+                                    case "Array":
+                                        valueType = "arr"
+                                        break
+                                }
+                                result += `${keyType}: ${key} -> `
+                                result += `${valueType}: ${value}`
+                                continue
+                            }
+                            let key = j[0]
+                            let value = j[1]
+                            let keyType = typeof key
+                            let valueType = typeof value
+                            if (key.__proto__ === Array.prototype){
+                                key = new List(key).showItems()
+                            }else if (key.__proto__ === String.prototype){
+                                key = "\"" + key + "\""
+                            }else if (key.__proto__ === Map.prototype){
+                                keyType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                keyType = "Array"
+                            }
+
+                            if (value.__proto__ === Array.prototype){
+                                value = new List(value).showItems()
+                            }else if (value.__proto__ === String.prototype){
+                                value = "\"" + value + "\""
+                            }else if (value.__proto__ === Map.prototype){
+                                valueType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                valueType = "Array"
+                            }
+
+                            switch (keyType){
+                                case "string":
+                                    keyType = "str"
+                                    break
+                                case "number":
+                                    keyType = "num"
+                                    break
+                                case "boolean":
+                                    keyType = "bool"
+                                    break
+                                case "Array":
+                                    keyType = "arr"
+                                    break
+                            }
+                            switch (valueType){
+                                case "string":
+                                    valueType = "str"
+                                    break
+                                case "number":
+                                    valueType = "num"
+                                    break
+                                case "boolean":
+                                    valueType = "bool"
+                                    break
+                                case "Array":
+                                    valueType = "arr"
+                                    break
+                            }
+                            result += `${keyType}: "${key}" -> `
+                            result += `${valueType}: "${value}", `
+
+                            index++;
+                        }
+                        result += ")"
+                        continue
+                    }
+                    result += this.#array[i]
+                    continue
+                }
+                if (this.#array[i].__proto__ === String.prototype){
+                    result += "\"" + this.#array[i] + "\", "
+                    continue
+                }else if (this.#array[i].__proto__ === Map.prototype){
+                    let index = 0
+                    result += "Map("
+                    for (let j of this.#array[i]){
+                        if (index === MyTools.mapLength(this.#array[i]) - 1){
+                            let key = j[0]
+                            let value = j[1]
+                            let keyType = typeof key
+                            let valueType = typeof value
+                            if (key.__proto__ === Array.prototype){
+                                key = new List(key).showItems()
+                            }else if (key.__proto__ === String.prototype){
+                                key = "\"" + key + "\""
+                            }else if (key.__proto__ === Map.prototype){
+                                keyType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                keyType = "Array"
+                            }
+
+                            if (value.__proto__ === Array.prototype){
+                                value = new List(value).showItems()
+                            }else if (value.__proto__ === String.prototype){
+                                value = "\"" + value + "\""
+                            }else if (value.__proto__ === Map.prototype){
+                                valueType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                valueType = "Array"
+                            }
+
+                            switch (keyType){
+                                case "string":
+                                    keyType = "str"
+                                    break
+                                case "number":
+                                    keyType = "num"
+                                    break
+                                case "boolean":
+                                    keyType = "bool"
+                                    break
+                                case "Array":
+                                    keyType = "arr"
+                                    break
+                            }
+                            switch (valueType){
+                                case "string":
+                                    valueType = "str"
+                                    break
+                                case "number":
+                                    valueType = "num"
+                                    break
+                                case "boolean":
+                                    valueType = "bool"
+                                    break
+                                case "Array":
+                                    valueType = "arr"
+                                    break
+                            }
+                            result += `${keyType}: ${key} -> `
+                            result += `${valueType}: ${value}`
+                            continue
+                        }
+                        let key = j[0]
+                        let value = j[1]
+                        let keyType = typeof key
+                        let valueType = typeof value
+                        if (key.__proto__ === Array.prototype){
+                            key = new List(key).showItems()
+                        }else if (key.__proto__ === String.prototype){
+                            key = "\"" + key + "\""
+                        }else if (key.__proto__ === Map.prototype){
+                            keyType = "Map"
+                        }else if (key.__proto__ === Array.prototype){
+                            keyType = "Array"
+                        }
+
+                        if (value.__proto__ === Array.prototype){
+                            value = new List(value).showItems()
+                        }else if (value.__proto__ === String.prototype){
+                            value = "\"" + value + "\""
+                        }else if (value.__proto__ === Map.prototype){
+                            valueType = "Map"
+                        }else if (key.__proto__ === Array.prototype){
+                            valueType = "Array"
+                        }
+
+                        switch (keyType){
+                            case "string":
+                                keyType = "str"
+                                break
+                            case "number":
+                                keyType = "num"
+                                break
+                            case "boolean":
+                                keyType = "bool"
+                                break
+                            case "Array":
+                                keyType = "arr"
+                                break
+                        }
+                        switch (valueType){
+                            case "string":
+                                valueType = "str"
+                                break
+                            case "number":
+                                valueType = "num"
+                                break
+                            case "boolean":
+                                valueType = "bool"
+                                break
+                            case "Array":
+                                valueType = "arr"
+                                break
+                        }
+                        result += `${keyType}: "${key}" -> `
+                        result += `${valueType}: "${value}", `
+
+                        index++;
+                    }
+                    result += ")"
+                    continue
+                }
+                result += this.#array[i]
+                result += ", "
+            }
+            result += "]"
+            return result
+        }else {
+            result += "["
+            for (let i = 0; i < this.#array.length; i++){
+                if (i === this.#array.length - 1){
+                    if (Array.isArray(this.#array[i])){
+                        result += new List(this.#array[i]).showItems()
+                        continue
+                    }else if (this.#array[i].__proto__ === Map.prototype){
+                        let index = 0
+                        result += "Map("
+                        for (let j of this.#array[i]){
+                            if (index === MyTools.mapLength(this.#array[i]) - 1){
+                                let key = j[0]
+                                let value = j[1]
+                                let keyType = typeof key
+                                let valueType = typeof value
+                                if (key.__proto__ === Array.prototype){
+                                    key = new List(key).showItems()
+                                }else if (key.__proto__ === String.prototype){
+                                    key = "\"" + key + "\""
+                                }else if (key.__proto__ === Map.prototype){
+                                    keyType = "Map"
+                                }else if (key.__proto__ === Array.prototype){
+                                    keyType = "Array"
+                                }
+    
+                                if (value.__proto__ === Array.prototype){
+                                    value = new List(value).showItems()
+                                }else if (value.__proto__ === String.prototype){
+                                    value = "\"" + value + "\""
+                                }else if (value.__proto__ === Map.prototype){
+                                    valueType = "Map"
+                                }else if (key.__proto__ === Array.prototype){
+                                    valueType = "Array"
+                                }
+
+                                switch (keyType){
+                                    case "string":
+                                        keyType = "str"
+                                        break
+                                    case "number":
+                                        keyType = "num"
+                                        break
+                                    case "boolean":
+                                        keyType = "bool"
+                                        break
+                                    case "Array":
+                                        keyType = "arr"
+                                        break
+                                }
+                                switch (valueType){
+                                    case "string":
+                                        valueType = "str"
+                                        break
+                                    case "number":
+                                        valueType = "num"
+                                        break
+                                    case "boolean":
+                                        valueType = "bool"
+                                        break
+                                    case "Array":
+                                        valueType = "arr"
+                                        break
+                                }
+                                result += `${keyType}: ${key} -> `
+                                result += `${valueType}: ${value}`
+                                continue
+                            }
+                            let key = j[0]
+                            let value = j[1]
+                            let keyType = typeof key
+                            let valueType = typeof value
+                            if (key.__proto__ === Array.prototype){
+                                key = new List(key).showItems()
+                            }else if (key.__proto__ === String.prototype){
+                                key = "\"" + key + "\""
+                            }else if (key.__proto__ === Map.prototype){
+                                keyType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                keyType = "Array"
+                            }
+
+                            if (value.__proto__ === Array.prototype){
+                                value = new List(value).showItems()
+                            }else if (value.__proto__ === String.prototype){
+                                value = "\"" + value + "\""
+                            }else if (value.__proto__ === Map.prototype){
+                                valueType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                valueType = "Array"
+                            }
+
+                            switch (keyType){
+                                case "string":
+                                    keyType = "str"
+                                    break
+                                case "number":
+                                    keyType = "num"
+                                    break
+                                case "boolean":
+                                    keyType = "bool"
+                                    break
+                                case "Array":
+                                    keyType = "arr"
+                                    break
+                            }
+                            switch (valueType){
+                                case "string":
+                                    valueType = "str"
+                                    break
+                                case "number":
+                                    valueType = "num"
+                                    break
+                                case "boolean":
+                                    valueType = "bool"
+                                    break
+                                case "Array":
+                                    valueType = "arr"
+                                    break
+                            }
+                            result += `${keyType}: "${key}" -> `
+                            result += `${valueType}: "${value}", `
+
+                            index++;
+                        }
+                        result += ")"
+                        continue
+                    }else if (this.#array[i].__proto__ === String.prototype){
+                        result += "\"" + this.#array[i] + "\""
+                        continue
+                    }
+                    result += this.#array[i]
+                    continue
+                    
+                }
+                if (Array.isArray(this.#array[i])){
+                    result += new List(this.#array[i]).showItems()
+                    result += ", "
+                    continue
+                }else if (this.#array[i].__proto__ === Map.prototype){
+                    let index = 0
+                    result += "Map("
+                    for (let j of this.#array[i]){
+                        if (index === MyTools.mapLength(this.#array[i]) - 1){
+                            let key = j[0]
+                            let value = j[1]
+                            let keyType = typeof key
+                            let valueType = typeof value
+                            if (key.__proto__ === Array.prototype){
+                                key = new List(key).showItems()
+                            }else if (key.__proto__ === String.prototype){
+                                key = "\"" + key + "\""
+                            }else if (key.__proto__ === Map.prototype){
+                                keyType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                keyType = "Array"
+                            }
+
+                            if (value.__proto__ === Array.prototype){
+                                value = new List(value).showItems()
+                            }else if (value.__proto__ === String.prototype){
+                                value = "\"" + value + "\""
+                            }else if (value.__proto__ === Map.prototype){
+                                valueType = "Map"
+                            }else if (key.__proto__ === Array.prototype){
+                                valueType = "Array"
+                            }
+
+                            switch (keyType){
+                                case "string":
+                                    keyType = "str"
+                                    break
+                                case "number":
+                                    keyType = "num"
+                                    break
+                                case "boolean":
+                                    keyType = "bool"
+                                    break
+                                case "Array":
+                                    keyType = "arr"
+                                    break
+                            }
+                            switch (valueType){
+                                case "string":
+                                    valueType = "str"
+                                    break
+                                case "number":
+                                    valueType = "num"
+                                    break
+                                case "boolean":
+                                    valueType = "bool"
+                                    break
+                                case "Array":
+                                    valueType = "arr"
+                                    break
+                            }
+                            result += `${keyType}: ${key} -> `
+                            result += `${valueType}: ${value}`
+                            continue
+                        }
+                        let key = j[0]
+                        let value = j[1]
+                        let keyType = typeof key
+                        let valueType = typeof value
+                        if (key.__proto__ === Array.prototype){
+                            key = new List(key).showItems()
+                        }else if (key.__proto__ === String.prototype){
+                            key = "\"" + key + "\""
+                        }else if (key.__proto__ === Map.prototype){
+                            keyType = "Map"
+                        }else if (key.__proto__ === Array.prototype){
+                            keyType = "Array"
+                        }
+
+                        if (value.__proto__ === Array.prototype){
+                            value = new List(value).showItems()
+                        }else if (value.__proto__ === String.prototype){
+                            value = "\"" + value + "\""
+                        }else if (value.__proto__ === Map.prototype){
+                            valueType = "Map"
+                        }else if (key.__proto__ === Array.prototype){
+                            valueType = "Array"
+                        }
+
+                        switch (keyType){
+                            case "string":
+                                keyType = "str"
+                                break
+                            case "number":
+                                keyType = "num"
+                                break
+                            case "boolean":
+                                keyType = "bool"
+                                break
+                            case "Array":
+                                keyType = "arr"
+                                break
+                        }
+                        switch (valueType){
+                            case "string":
+                                valueType = "str"
+                                break
+                            case "number":
+                                valueType = "num"
+                                break
+                            case "boolean":
+                                valueType = "bool"
+                                break
+                            case "Array":
+                                valueType = "arr"
+                                break
+                        }
+                        result += `${keyType}: "${key}" -> `
+                        result += `${valueType}: "${value}", `
+
+                        index++;
+                    }
+                    result += "), "
+                    continue
+                }else if (this.#array[i].__proto__ === String.prototype){
+                    result += "\"" + this.#array[i] + "\", "
+                    continue
+                }
+                result += this.#array[i]
+                result += ", "
+                
+            }
+            result += "]"
+            return result
+        }
+    }
+
+    // maxDepth(){
+    //     var dep = 0
+    //     // 判断是否是1维数组/包含数组
+    //     let isFlat = true
+    //     for (let i of this.#array){
+    //         if (Array.isArray(i)){
+    //             isFlat = false
+    //             break
+    //         }
+    //     }
+    //     if (isFlat){
+    //         return 1
+    //     }
+
+    //     for (let i = 0; i < this.#array; i++){
+    //         console.log(Arrar.isArray(this.#array[i]));
+    //         if (!Array.isArray(this.#array[i])){
+    //             continue
+    //         }
+    //         dep += this.maxDepth(this.#array[i])
+    //     }
+    //     return dep
+
+    // }
+
+    static toString(list){
+        let result = "";
+        for (let i of list.array()){
+            result += i;
+        }
+        return result;
+    }
+
+    get(index){
+        return this.#array[index]
     }
 
     reversed(){
@@ -276,17 +880,21 @@ class List{
         this.#array = result.#array;
     }
 
-    toString(){
-        var result = "";
-        for (let i of this.#array){
-            result += i;
-        }
-        return result;
-    }
-
 
     clear(){
         this.#array = [];
+    }
+
+    afterInsert(index, ele){
+        var result = new List()
+        for (let i = 0; i <= index; i++){
+            result.append(this.#array[i])
+        }
+        result.append(ele)
+        for (let i = index + 1; i < this.#array.length; i++){
+            result.append(this.#array[i])
+        }
+        this.#array = result.array()
     }
 
     originalSort(){
@@ -300,46 +908,81 @@ class List{
             for (let j = 0; j < i; j++){
                 if (result.array()[j] > result.array()[j+1]){
                     x = result.array()[j];
-                    result.change(j, result.array()[j+1]);
-                    result.change(j+1, x);
+                    result.set(j, result.array()[j+1]);
+                    result.set(j+1, x);
                 }
             }
         }
         this.#array = result.#array
     }
 
-    append(obj){
-        this.#array.push(obj);
 
+    append(...obj){
+        for (let i of obj){
+            this.#array.push(i);
+        }
+        
     }
 
-    delete(obj){
+    join(listB){
+        if (listB.__proto__ != this.__proto__){
+            throw new Error("The types of \"listB\" must be \"List\"")
+        }
+        for (let i of listB.array()){
+            this.append(i)
+        }
+    }
+
+
+    delete(del_target){
         var final = [];
-        for (let i of this.#array){
-            if (i != obj){
-                final.push(i);
+        var contains = false
+        if (!Array.isArray(del_target)){
+            var index = parseInt(del_target.split("index->")[1])
+            for (let i in this.#array){
+                if (parseInt(i) === index){
+                    continue
+                }
+                final.push(this.#array[parseInt(i)])
             }
+            this.#array = final
+            return undefined
+        }
+        for (let i of this.#array){
+            for (let j of del_target){
+                if (j === i){
+                    contains = true
+                    break
+                }
+            }
+            if (contains === false){
+                final.push(i)
+            }else {
+                contains = false
+            }
+
         }
         this.#array = final;
     }
 
+
     pop(){
-        this.#array.pop();
+        return this.#array.pop();
     }
     
     push(obj){
-        this.#array.push(obj);
+        return this.#array.push(obj);
     }
 
     shift(obj){
-        this.#array.shift(obj);
+        return this.#array.shift(obj);
     }
 
     unshift(){
-        this.#array.unshift();
+        return this.#array.unshift();
     }
 
-    change(index, obj){
+    set(index, obj){
         this.#array[index] = obj;
     }
 
@@ -355,71 +998,137 @@ class List{
         }
         return result.array();
     }
-    
-    // 这个函数好像没什么卵用~
-    // toArray(){
-    //     var result = [];
-    //     for (let i of this.#array){
-    //         result.push(i);
-    //     }
-    //     return result;
-    // }
 
-    containsElenmentCount(elenment){
-        // 返回元素中第一个与传入参数相等的元素的下标
-        var result = false;
-        if (MyTools.contains(this.#array, elenment)){
-            result = 0;
-            for (let i of this.array()){
-                if (i === elenment){
-                    result += 1;
+    elenmentCount(){
+        var result = new Map()
+        var box = []
+        var num = 0
+        for (let i of this.#array){
+            num = 0
+            if (box.indexOf(i) === -1){
+                box.push(i)
+                for (let j of this.#array){
+                    if (Array.isArray(i) && new List(i).absEquals(new List(j))){
+                        num += 1
+                        continue
+                    }
+                    if (i === j){
+                        num += 1
+                    }
                 }
+                result.set("[" + String(i) + "]", num)
             }
         }
-        return result;
+        return result
     }
 
-    getValueByString(string){
+    contains(ele, strictForArray){
+        let result = 0
+        if (strictForArray != undefined && strictForArray != true && strictForArray != false){
+            throw new Error("Parameter value error: \"strictForArray\"")
+        }
+        if (strictForArray === undefined || strictForArray === false){
+            for (let i of this.#array){
+                // ele是数组
+                if (Array.isArray(ele) && new List(ele).equals(new List(i))){
+                    return result
+                }else if (i === ele){
+                    return result
+                }
+                result++;
+            }
+        }else if (strictForArray === true){
+            for (let i of this.#array){
+                // ele是数组
+                if (Array.isArray(ele) && new List(ele).absEquals(new List(i))){
+                    return result
+                }else if (i === ele){
+                    return result
+                }
+                result++;
+            }
+        }
+        
+    }
+
+    static getValueByString(target_string){
+        if (typeof(target_string) != "string"){
+            target_string = String(target_string)
+        }
         var result = new List([]);
-        for (let i of string){
+        for (let i of target_string){
             result.append(i);
         }
         return result;
     }
+
+    toString(){
+        var result = "";
+        for (let i of this.#array){
+            result += i;
+        }
+        return result;
+    }
+
 }
 
-// class Integer{
 
-//     getNumberByChar(target_char){
-//         var value = new Map([['1', 1], ['2', 2], ['3', 3], ['4', 4],
-//                             ['5', 5], ['6', 6], ['7', 7], ['8', 8],
-//                             ['9', 9], ['0', 0]]);
-//         for (let i of value){
-//             if (i[0] === target_char){
-//                 return value.get(i[0]);
-//             }
-//         }
-//         throw new Error("InputNotIsNumber...")
-//     }
+class math{
+    constructor(){
+        var e = Math.E
+        var pi = Math.PI
+        var ln10 = Math.LN10
+        var ln2 = Math.LN2
+    }
 
-//     int(number_text){
-//         var numbers = new List().getValueByString(number_text);
-//         numbers.reversed();
-//         var results = new List();
-//         for (let i in numbers){
-//             i = parseInt(i)就离谱呀，我写这个函数就是为了实现这个功能,又绕回来了，我忘了js类型转换的函数名，准备自己写一个，写到这想起来了...
-//         }
-//     }
-// }
+    // 幂运算
+    static pow(num, power){
+        if (power === undefined){
+            power = 1
+        }
+        return Math.pow(num, power)
+    }
 
-class MyMath{
+    // 返回数组中的最大值
+    static max(array){
+        var result = array[0]
+        for (let i of array){
+            if (i > result){
+                result = i
+            }
+        }
+        return result
+    }
 
+    // 返回数组中的最小值
+    static min(array){
+        var result = array[0]
+        for (let i of array){
+            if (i < result){
+                result = i
+            }
+        }
+        return result
+    }
+
+    // 比较大小，返回大值
     static bigger(x, y){
         if (x === y){
             return true;
         }
-        x > y ? x : y;
+        return x > y ? x : y;
     }
+
+    // 比较大小，返回小值
+    static smaller(x, y){
+        if (x === y){
+            return true
+        }
+        return x < y ? x : y
+    }
+
+
+
     static radianToAngle(rad){
         return rad * 57.29577951308232;
     }
@@ -444,58 +1153,91 @@ class MyMath{
         
     }
 
-    static random(min, max){
-        if (min > max){
-            throw new Error("\"min\" should be smaller than \"max\"");
-        }
-        if (min >= 0 && max >= 0){
-            return this.randPositiveInteger(min, max);
-        }
-        var exchange;
-        var result;
-        if (min <= 0 && max <= 0){
-            min = new MyMath().opposite(min);
-            max = new MyMath().opposite(max);
-            
-            if (min > max){
-                exchange = min;
-                min = max;
-                max = exchange;
+    
+
+
+    static floatOperation(expression){
+        if (new List(expression).contains(" ")){
+            var temp = ""
+            for (let i of expression){
+                if (i != " "){
+                    temp += i
+                }
             }
-            result = new MyMath().randPositiveInteger(min, max);
-
-            return new MyMath().opposite(result);
-
-        }else if (min <= 0 && max >= 0){
-            var min_random;
-            var max_random;
-
-
-            min = Math.abs(min);
-            max = Math.abs(max);
-            min_random = new MyMath().randPositiveInteger(0, min);
-            max_random = new MyMath().randPositiveInteger(0, max);
-            if (min_random > max_random){
-                result = new MyMath().randPositiveInteger(0, min);
-            }else if (min_random < max_random){
-                result = new MyMath().randPositiveInteger(0, max);
-            }else{
-                result = new MyMath().randPositiveInteger(0, max);
-            }
-            if (new MyMath().randPositiveInteger(0, 1) === 1){
-                result = new MyMath().opposite(result);
-            }
-            
-
+            expression = temp
         }
-        while (result > max){
-            result--;
+        var x, y, result, ope;
+        var counter = 1;
+        if (new List(expression).contains("+")){
+            x = expression.split('+')[0];
+            y = expression.split('+')[1];
+            ope = '+';
+        }else if (new List(expression).contains("-")){
+            x = expression.split('-')[0];
+            y = expression.split('-')[1];
+            ope = '-';
+        }else if (new List(expression).contains("*")){
+            x = expression.split('*')[0];
+            y = expression.split('*')[1];
+            ope = '*';
+        }else if (new List(expression).contains("/")){
+            ope = '/';
         }
-        return result
+        x = parseFloat(x);
+        y = parseFloat(y);
+        switch (ope){
+            case '+':
+                result = MyTools.floatAdd(x, y);
+                break;
+            case '-':
+                if (x > y){
+                    while (new List(String(y)).contains(".")){
+                        y *= 10;
+                        counter *= 10;
+                    }
+                }
+                x *= counter;
+                result = (x - y) / counter;
+                break;
+            case '*':
+                while (new List(String(x)).contains(".") | new List(String(y)).contains(".")){
+                    if (new List(String(x)).contains(".")){
+                        x *= 10;
+                        counter *= 10;
+                    }else{
+                        y *= 10;
+                        counter *= 10;
+                    }
+                }
+                result = x * y / counter;
+                break
+            case '/':
+                throw new Error("For some strange reason, division does not support exact calculation");
+        }
+        return result;
     }
 
+    
 
+    static circularAreaByRad(r, pi){
+        if (pi === undefined){
+            pi = this.pi
+        }
+        console.log(this.pi)
+        return pi * this.pow(r, 2)
+    }
 
+    static circularAreaByDia(d, pi){
+        if (pi === undefined){
+            pi = this.pi
+        }
+        console.log(this.pi);
+        return pi * this.pow(d/2, 2)
+    }
+
+}
+
+class Random{
     // 随机正整数，参数不能包含负数
     static randPositiveInteger(min, max){
         if (min > max){
@@ -504,22 +1246,37 @@ class MyMath{
             throw new Error("range cannot be less than \"zero\"");
         }
 
-        var root = Math.random();
-        root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
-        var num_length = String(max).length;
-        root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
+        // 下面这段可以扩大正整数的最大取值范围，但一般用不上，因为默认已经都是一个17位的数了
+        // var add = String(Math.random())
+        // var add1 = new List(add)
+        // add1.delete(["0", "."])
+        // var root = Math.random() + add1.toString()
+
+        var root = Math.random()
+
+        root = new List(List.getValueByString(String(root)).slice(2, String(root).length)).toString();
+        var num_length = Random.randint(1, String(max).length);
+        root = new List(List.getValueByString(root).slice(0, num_length)).toString();
         root = parseInt(root);
 
         while (root < min | root > max){
+            
+            // add = String(Math.random())
+            // add1 = new List(add)
+            // add1.delete(["0", "."])
+            // root = Math.random() + add1.toString()
+
             root = Math.random();
-            root = new List(new List().getValueByString(String(root)).slice(2, String(root).length)).toString();
-            num_length = String(max).length;
-            root = new List(new List().getValueByString(root).slice(0, num_length)).toString();
+
+            root = new List(List.getValueByString(String(root)).slice(2, String(root).length)).toString();
+            num_length = Random.randint(1, String(max).length);
+            root = new List(List.getValueByString(root).slice(0, num_length)).toString();
             root = parseInt(root);
 
         }
         return root;
     }
+    
     // 随机正浮点数，因为基于random函数，故参数同样不能包含负数
     static randPositiveFloat(min, max, float_length){
 
@@ -532,22 +1289,193 @@ class MyMath{
         if (float_length === undefined){
             float_length = 1;
         }
-        var forward_int = String(this.randPositiveInteger(min, max - 1));
+        var forward_int = String(Random.randPositiveInteger(min, max - 1));
         var float = "";
         for (let i = 0; i < float_length; i++){
-            float += String(this.randPositiveInteger(1, 9));
+            float += String(Random.randPositiveInteger(1, 9));
         }
         var result = forward_int + '.' + float;
         result = parseFloat(result);
         return result;
+    }
 
+    // 范围完善的随机数
+    static randint(start, stop){
+        if (start > stop){
+            throw new Error("\"max\" not less than the \"stop\"...")
+        }
+        // 正整数(包含0)
+        if (start >= 0 && stop >= 0){
+            if (start === stop){
+                return start
+            }
+            return Random.randPositiveInteger(start, stop)
+            
+        }
 
+        // 范围是负整数
+        if (start < 0 && stop < 0){
+            if (start === stop){
+                return start
+            }
+            var temp = start
+            start = stop
+            stop = temp
+            return math.opposite(Random.randint(math.opposite(start), math.opposite(stop)))
+        }
+
+        // 范围是负整数到整数
+        if (start < 0 && stop >= 0){
+            if (start > stop){
+                throw new Error("\"max\" not less than the \"stop\"...")
+            }else if (start === stop){
+                return start
+            }
+            return Random.randint(0, 1) == 1? Random.randint(0, stop) : Random.randint(start, -1)
+
+        }
+    }
+
+    static randChoice(choice_box){
+        if (choice_box.__proto__ != new List().__proto__){
+            throw new Error("The types of \"choice_box\" must be \"List\"")
+        }
+        var map = new Map([])
+        for (let i = 1; i <= choice_box.length(); i++){
+            map.set(i, choice_box.get(i - 1))
+        }
+        var target = Random.randint(1, choice_box.length())
+        return map.get(target)
+    }
+
+    static extract(extract_number, from_datas){
+        if (from_datas.__proto__ != new List().__proto__){
+            throw new Error("The types of \"choice_box\" must be \"List\"")
+        }
+        if (extract_number > from_datas.length()){
+            throw new Error("\"extract_number\" must be smaller than \"from_datas.length()\"")
+        }
+        if (extract_number === from_datas.length()){
+            return from_datas
+        }
+        var el;
+        var result = new List()
+        while (result.length() < extract_number){
+            el = Random.randChoice(from_datas)
+            from_datas.delete([el])
+            if (result.containsElenmentCount(new List([el])) === false){
+                result.append(el)
+            }
+        }
+        return result
     }
 }
-// module.exports = {
+
+
+class Node{
+    #elenment
+    #next
+    constructor(elenment, next){
+        if (elenment === undefined){
+            this.#elenment = null;
+        }else{
+            this.#elenment = elenment;
+        }
+        // console.log(`ele: ${elenment}`);
+        // console.log(`next: ${next}`);
+        // console.log("-----------------------");
+        if (next === undefined){
+            this.#next = null;
+        }else{
+            this.#next = next;
+        }
+    }
+
+    get_elenment(){
+        return this.#elenment;
+    }
+
+    get_next(){
+        return this.#next;
+    }
+
+    set_elenment(ele){
+        this.#elenment = ele;
+    }
+
+    set_next(node){
+        this.#next = node;
+    }
+
+}
+
+class LinkedList{
+    #nodeList
+    #head
+    constructor(node){
+        if (node === undefined){
+            this.#nodeList = new List();
+            this.#head = null;
+        }else{
+            if (node.__proto__ != new Node().__proto__){
+                throw new Error("The types of \"node\" must be \"Node\"");
+            }else{
+                this.#nodeList = new List(node);
+                this.#head = node;
+                if (node.get_next() != null && node.get_next().__proto__ === new Node().__proto__){
+                    this.append(node.get_next());
+    
+                }
+            }
+        }
+        
+    }
+
+    get_nodeList(){
+        return this.#nodeList;
+    }
+
+    getNode(index){
+        return this.#nodeList.get(index);
+    }
+
+    append(node){
+        if (node.__proto__ != new Node().__proto__){
+            throw new Error("The types of \"node\" must be \"Node\"");
+        }
+        if (this.#nodeList.length() === 0){
+            this.#nodeList.append(node);
+            this.#head = node;
+
+            if (node.get_next() != null && node.get_next().__proto__ === new Node().__proto__){
+                this.append(node.get_next());
+            }
+        }else{
+            let current = this.#nodeList.get(this.#nodeList.length() - 1);
+            current.set_next(node)
+            this.#nodeList.delete(`index->${this.#nodeList.length() - 1}`)
+            this.#nodeList.append(current);
+            this.#nodeList.append(node);
+            if (node.get_next() != null && node.get_next().__proto__ === new Node().__proto__){
+                this.append(node.get_next());
+
+            }
+        }
+    }
+
+    remove(){}
+
+
+}
+
+
+
+// exports = {
 //     MyTools,
 //     List,
-//     MyMath,
+//     math,
+//     Random,
+//     LinkedList,
+//     Node
 // }
-
-export {MyTools, MyMath, List};
+export {MyTools, math, List, Random, LinkedList, Node};
