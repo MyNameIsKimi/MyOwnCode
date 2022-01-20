@@ -1376,7 +1376,5 @@ class Random{
 //     List,
 //     math,
 //     Random,
-//     LinkedList,
-//     Node
 // }
-export {MyTools, math, List, Random, LinkedList, Node};
+export {MyTools, math, List, Random};
