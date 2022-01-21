@@ -294,7 +294,7 @@ class List{
 
     // }
 
-    showItems(){
+    showItems(maximum){
         var isFlat = true
         var result = ""
         for (let i of this.#array){
@@ -563,6 +563,14 @@ class List{
                 result += ", "
             }
             result += "]"
+            if (maximum != undefined && (typeof(maximum) === "number" && new List(String(maximum)).contains(".") === undefined)){
+                if (maximum >= this.#array.length){
+                    return result
+                }else{
+                    let slice = new List(this.slice(0, maximum))
+                    return slice.showItems()
+                }
+            }
             return result
         }else {
             result += "["
@@ -832,6 +840,14 @@ class List{
                 
             }
             result += "]"
+            if (maximum != undefined && (typeof(maximum) === "number" && new List(String(maximum)).contains(".") === undefined)){
+                if (maximum >= this.#array.length){
+                    return result
+                }else{
+                    let slice = new List(this.slice(0, maximum))
+                    return slice.showItems()
+                }
+            }
             return result
         }
     }
@@ -990,7 +1006,7 @@ class List{
     }
 
     slice(start, stop){
-        var result = new List([]);
+        var result = new List();
         if (start < 0 | stop > this.#array.length){
             throw new Error("ElenmentError!!: stop > array.length or start < 0");
         }
