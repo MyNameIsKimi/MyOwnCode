@@ -94,6 +94,44 @@ class MyTools{
         }
         return parseFloat(result)
     }
+    static floatSubtraction(x, y){
+        let x1 = x;
+        let y1 = y;
+        if (new List(String(x)).contains(".") === undefined && new List(String(y)).contains(".") === undefined){
+            return x + y
+        }
+        let x_multiple = 1;
+        let y_multiple = 1;
+        while (new List(String(x)).contains('.')){
+            x *= 10;
+            x_multiple *= 10;
+        }
+        while (new List(String(y)).contains('.')){
+            y *= 10;
+            y_multiple *= 10;
+        }
+        x = x1;
+        y = y1;
+        x *= x_multiple > y_multiple? x_multiple: y_multiple;
+        y *= x_multiple > y_multiple? x_multiple: y_multiple;
+        // return [x_multiple, y_multiple]
+    
+        let result = x - y;
+        let zero_count = new List(String(x_multiple > y_multiple? x_multiple: y_multiple)).elenmentCount().get("[0]")
+        if (String(result).length <= zero_count){
+            result = MyTools.addZero(String(result), zero_count + 1)
+        }
+        result = String(result)
+        let temp = new List(result)
+        temp.reversed()
+        temp.afterInsert(zero_count - 1, '.')
+        temp.reversed()
+        result = ""
+        for (let i of temp.array()){
+            result += i
+        }
+        return parseFloat(result)
+    }
 
 
     static isTheArray(obj){
@@ -1035,7 +1073,14 @@ class List{
                         num += 1
                     }
                 }
-                result.set("[" + String(i) + "]", num)
+                if (i.__proto__ === Array.prototype){
+                    result.set("Array:" + new List(i).showItems(), num)
+                }else if (i.__proto__ === Map.prototype){
+                    result.set("Map:" + new List(i).showItems(), num)
+                }else {
+                    result.set("[" + String(i) + "]", num)
+                }
+                
             }
         }
         return result
@@ -1049,9 +1094,12 @@ class List{
         if (strictForArray === undefined || strictForArray === false){
             for (let i of this.#array){
                 // ele是数组
-                if (Array.isArray(ele) && new List(ele).equals(new List(i))){
+                if (Array.isArray(ele) && new List([ele]).equals(new List([i]))){
+                    console.log(new List([ele]).elenmentCount());
+                    console.log(new List([i]).elenmentCount());
                     return result
                 }else if (i === ele){
+                    
                     return result
                 }
                 result++;
@@ -1059,7 +1107,7 @@ class List{
         }else if (strictForArray === true){
             for (let i of this.#array){
                 // ele是数组
-                if (Array.isArray(ele) && new List(ele).absEquals(new List(i))){
+                if (Array.isArray(ele) && new List([ele]).absEquals(new List([i]))){
                     return result
                 }else if (i === ele){
                     return result
@@ -1209,14 +1257,7 @@ class math{
                 result = MyTools.floatAdd(x, y);
                 break;
             case '-':
-                if (x > y){
-                    while (new List(String(y)).contains(".")){
-                        y *= 10;
-                        counter *= 10;
-                    }
-                }
-                x *= counter;
-                result = (x - y) / counter;
+                result = MyTools.floatSubtraction(x, y)
                 break;
             case '*':
                 while (new List(String(x)).contains(".") | new List(String(y)).contains(".")){
