@@ -98,7 +98,7 @@ class MyTools{
         let x1 = x;
         let y1 = y;
         if (new List(String(x)).contains(".") === undefined && new List(String(y)).contains(".") === undefined){
-            return x + y
+            return x - y
         }
         let x_multiple = 1;
         let y_multiple = 1;
