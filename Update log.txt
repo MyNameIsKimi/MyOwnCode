@@ -18,3 +18,6 @@ PS：函数文档太耗时间了，有空给大家补上。^_^ ~
 
 #2022-01-21 JavaScript:
 #List对象的showItems()函数新增指定展示元素的数量，当数量超过或等于列表长度将无视数量，返回整个列表，否则将只返回指定数量的元素。
+
+#2022-01-22 JavaScript:
+#修复了List对象中equals()、elenmentCount()、contains()函数无法区分[2]和2的漏洞, 修复了floatOperation()函数中计算减法出现精度丢失的情况。
