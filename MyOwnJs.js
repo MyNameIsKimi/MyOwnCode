@@ -1087,7 +1087,7 @@ class List{
     }
 
     contains(ele, strictForArray){
-        let result = 0
+        var result = 0
         if (strictForArray != undefined && strictForArray != true && strictForArray != false){
             throw new Error("Parameter value error: \"strictForArray\"")
         }
@@ -1098,17 +1098,53 @@ class List{
                     console.log(new List([ele]).elenmentCount());
                     console.log(new List([i]).elenmentCount());
                     return result
+                }else if (ele.__proto__ === Map.prototype){
+                    let map = new List()
+                    for (let i of ele){
+                        map.append(i)
+                    }
+                    for (let i of this.#array){
+                        if (i.__proto__ === Map.prototype){
+                            let current = new List()
+                            for (let j of i){
+                                current.append(j)
+                            }
+                            if (map.equals(current)){
+                                return result
+                            }
+                        }
+                        result++
+                    }
+
                 }else if (i === ele){
                     
                     return result
                 }
-                result++;
+                result++
             }
         }else if (strictForArray === true){
             for (let i of this.#array){
                 // ele是数组
                 if (Array.isArray(ele) && new List([ele]).absEquals(new List([i]))){
                     return result
+                }else if (ele.__proto__ === Map.prototype){
+                    let map = new List()
+                    for (let i of ele){
+                        map.append(i)
+                    }
+                    for (let i of this.#array){
+                        if (i.__proto__ === Map.prototype){
+                            let current = new List()
+                            for (let j of i){
+                                current.append(j)
+                            }
+                            if (map.absEquals(current)){
+                                return result
+                            }
+                        }
+                        result++
+                    }
+
                 }else if (i === ele){
                     return result
                 }
