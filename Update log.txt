@@ -21,3 +21,6 @@ PS：函数文档太耗时间了，有空给大家补上。^_^ ~
 
 #2022-01-22 JavaScript:
 #修复了List对象中equals()、elenmentCount()、contains()函数无法区分[2]和2的漏洞, 修复了floatOperation()函数中计算减法出现精度丢失的情况。
+
+#2022-01-23 JavaScript:
+#完善了List对象的一些功能，contains方法可以识别Map了，且同样支持"严格"与"非严格"模式。
